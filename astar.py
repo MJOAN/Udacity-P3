@@ -52,7 +52,7 @@ def shortest_path(M, start, goal):
                 heapq.heappush(openset, (neighbor, f[neighbor]))
                 came_from[neighbor] = current
                 
-    reversed(a_star_search_path(goal, start))
+    return False
 
 def a_star_search_path(came_from, current): # cite 3
     path = []
