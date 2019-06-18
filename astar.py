@@ -1,26 +1,15 @@
 import heapq
-import math 
-
-import heapq
 from collections import defaultdict
-import math 
-
-import heapq
-from collections import defaultdict
-import math 
+import math
 
 def shortest_path(edges, nodes, start, goal):
     closedset = set()
     
-    openset = list()  
-    
-    # heapq will store in tuple(heuristic_estimated_cost, current_node, distance_cost)
-    heapq.heappush(openset, (0, start, 0)) 
-        
+    openset = list() 
+    # heapq tuple: (heuristic_value, node, distance_cost)
+    heapq.heappush(openset, (0, start, 0))  
+       
     came_from = defaultdict()
-    
-    g = [math.inf] * (len(M.intersections) + 1)  
-    g[start] = 0
     
     f = defaultdict()
     f[start] = calculate_distance(M, start, goal)
@@ -39,16 +28,13 @@ def shortest_path(edges, nodes, start, goal):
                 continue
 
             distance_cost = g_cost + calculate_distance(M, current, neighbor)
-            
             heuristic = calculate_distance(M, neighbor, goal)
-            f[neighbor] = g[neighbor] + heuristic
             
+            f[neighbor] = g_cost + heuristic
             heapq.heappush(openset, (f[neighbor], neighbor, distance_cost))
-            
-            g[neighbor] = distance_cost
             came_from[neighbor] = current   
                   
-    return "No path found"
+    return False
 
 def a_star_search_path(came_from, current):
     path = []
