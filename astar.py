@@ -6,39 +6,46 @@ def shortest_path(M, start, goal):
     closedset = set()
     
     openset = list()  
-    heapq.heappush(openset, (0, start, 0)) 
+    heapq.heappush(openset, (0, start)) 
+    
+    g = [math.inf] * (len(M.intersections) + 1)
+    g[start] = 0
         
     came_from = defaultdict()
     
     f = defaultdict()
     f[start] = calculate_distance(M, start, goal)
      
-    while len(openset) >= 0:
-        (g_cost, current, distance_cost) = heapq.heappop(openset) 
-        
+    while len(openset) > 0:
+        (g_cost, current) = heapq.heappop(openset) 
+                
         if current == goal:
-            return a_star_search_path(came_from, current)
-        
-        closedset.add(current)
+            return a_star_search_path(came_from, goal)
 
-        for neighbor in M.roads[current]:  
+        closedset.add(current)
         
+        for neighbor in M.roads[current]:  
+            
             if neighbor in closedset:
                 continue
-
+        
             distance_cost = g_cost + calculate_distance(M, current, neighbor)
-            heuristic = calculate_distance(M, neighbor, goal)
             
-            f[neighbor] = g_cost + heuristic
-            heapq.heappush(openset, (f[neighbor], neighbor, distance_cost))
-            came_from[neighbor] = current   
-                  
-    return False
-
+            if neighbor in openset and distance_cost < g[neighbor]: 
+                openset.remove(neighbor)
+                
+            if neighbor not in openset and g[neighbor] > distance_cost:                
+                g[neighbor] = distance_cost
+                came_from[neighbor] = current 
+                
+                f[neighbor] = g[neighbor] + calculate_distance(M, neighbor, goal)
+                heapq.heappush(openset, (f[neighbor], neighbor))
+           
+    return "No path found"
+         
 def a_star_search_path(came_from, current):
     path = [current]
-    keys = [key for key in came_from.keys()]
-    while current in keys:
+    while current in came_from.keys():
         current = came_from[current]
         path.append(current)
     return path[::-1]
