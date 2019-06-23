@@ -8,9 +8,9 @@ def shortest_path(M, start, goal):
     
     closedset = set()
     
-    priority_queue = list()
+    heap = list()
     estimated_cost, distance_cost = 0, 0
-    heapq.heappush(priority_queue, (estimated_cost, start, distance_cost))
+    heapq.heappush(heap, (estimated_cost, start, distance_cost))
     
     came_from = defaultdict()
     
@@ -18,8 +18,12 @@ def shortest_path(M, start, goal):
     f[start] = calculate_distance(M, start, goal)
     
     while len(openset) > 0:
-        (estimated_cost, current, distance_cost) = heapq.heappop(priority_queue)
-        openset.remove(current)
+        (estimated_cost, current, distance_cost) = heapq.heappop(heap)
+        
+        if current in openset:
+            openset.remove(current)
+        else:
+            continue
         
         closedset.add(current)
         
@@ -27,21 +31,25 @@ def shortest_path(M, start, goal):
             return a_star_search_path(came_from, current)
         
         for neighbor in M.roads[current]:  
+            print('current: ', current)
+            print('openset: ', openset)
+            print('heap: ', heap)
             
             if neighbor in closedset: 
                 continue  
             
             new_cost = distance_cost + calculate_distance(M, current, neighbor)         
-            lowest_cost_so_far = get_neighbor_cost(priority_queue, neighbor)
-            
-            if neighbor not in openset or lowest_cost_so_far < distance_cost:                
-                lowest_cost_so_far = distance_cost
+            lowest_cost_so_far = get_neighbor_cost(heap, neighbor)
+                          
+            if neighbor not in openset or new_cost < lowest_cost_so_far:                
+                lowest_cost_so_far = new_cost
                 came_from[neighbor] = current 
                 
                 f[neighbor] = new_cost + calculate_distance(M, neighbor, goal)
-                heapq.heappush(priority_queue, (f[neighbor], neighbor, new_cost))
+                heapq.heappush(heap, (f[neighbor], neighbor, lowest_cost_so_far))
                 openset.add(neighbor)
 
+   
     return False
 
 def get_neighbor_cost(heap, neighbor):
@@ -49,19 +57,19 @@ def get_neighbor_cost(heap, neighbor):
         if i[1] == neighbor:  
             item = heap[0][2]
             return item
-        
+
 def a_star_search_path(came_from, current):
     path = [current]
     while current in came_from.keys():
         current = came_from[current]
         path.append(current)
+        print('path', path)
     return path[::-1]
 
 def calculate_distance(M, intersection1, intersection2): # cite: 1
     current_x_y = M.intersections[intersection1]
     neighbor_x_y = M.intersections[intersection2]
     return math.sqrt(sum( [ (a - b) ** 2 for a, b in zip(current_x_y, neighbor_x_y) ] ))
-
 # Citations: 
 # 1: https://www.w3resource.com/python-exercises/python-basic-exercise-40.php
 # 2: http://theory.stanford.edu/~amitp/GameProgramming/ImplementationNotes.html
