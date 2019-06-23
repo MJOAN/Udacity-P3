@@ -8,9 +8,9 @@ def shortest_path(M, start, goal):
     
     closedset = set()
     
-    heap = list()
+    priority_queue = list()
     estimated_cost, distance_cost = 0, 0
-    heapq.heappush(heap, (estimated_cost, start, distance_cost))
+    heapq.heappush(priority_queue, (estimated_cost, start, distance_cost))
     
     came_from = defaultdict()
     
@@ -18,7 +18,7 @@ def shortest_path(M, start, goal):
     f[start] = calculate_distance(M, start, goal)
     
     while len(openset) > 0:
-        (estimated_cost, current, distance_cost) = heapq.heappop(heap)
+        (estimated_cost, current, distance_cost) = heapq.heappop(priority_queue)
         openset.remove(current)
         
         closedset.add(current)
@@ -32,14 +32,14 @@ def shortest_path(M, start, goal):
                 continue  
             
             new_cost = distance_cost + calculate_distance(M, current, neighbor)         
-            lowest_cost_so_far = get_neighbor_cost(heap, neighbor)       
-                
+            lowest_cost_so_far = get_neighbor_cost(priority_queue, neighbor)
+            
             if neighbor not in openset or lowest_cost_so_far < distance_cost:                
                 lowest_cost_so_far = distance_cost
                 came_from[neighbor] = current 
                 
                 f[neighbor] = new_cost + calculate_distance(M, neighbor, goal)
-                heapq.heappush(heap, (f[neighbor], neighbor, new_cost))
+                heapq.heappush(priority_queue, (f[neighbor], neighbor, new_cost))
                 openset.add(neighbor)
 
     return False
@@ -49,13 +49,12 @@ def get_neighbor_cost(heap, neighbor):
         if i[1] == neighbor:  
             item = heap[0][2]
             return item
-
+        
 def a_star_search_path(came_from, current):
     path = [current]
     while current in came_from.keys():
         current = came_from[current]
         path.append(current)
-        print('path', path)
     return path[::-1]
 
 def calculate_distance(M, intersection1, intersection2): # cite: 1
