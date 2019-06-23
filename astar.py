@@ -31,9 +31,6 @@ def shortest_path(M, start, goal):
             return a_star_search_path(came_from, current)
         
         for neighbor in M.roads[current]:  
-            print('current: ', current)
-            print('openset: ', openset)
-            print('heap: ', heap)
             
             if neighbor in closedset: 
                 continue  
@@ -63,7 +60,6 @@ def a_star_search_path(came_from, current):
     while current in came_from.keys():
         current = came_from[current]
         path.append(current)
-        print('path', path)
     return path[::-1]
 
 def calculate_distance(M, intersection1, intersection2): # cite: 1
